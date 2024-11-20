@@ -43,9 +43,9 @@ const accessTokenRequestQueueMap: Record<string, Function[]> = {};
 
 /**
  * 请求access_token
- * 
+ *
  * 使用refresh_token去刷新获得access_token
- * 
+ *
  * @param refreshToken 用于刷新access_token的refresh_token
  */
 async function requestToken(refreshToken: string) {
@@ -109,9 +109,9 @@ async function requestToken(refreshToken: string) {
 
 /**
  * 获取缓存中的access_token
- * 
+ *
  * 避免短时间大量刷新token，未加锁，如果有并发要求还需加锁
- * 
+ *
  * @param refreshToken 用于刷新access_token的refresh_token
  */
 async function acquireToken(refreshToken: string): Promise<any> {
@@ -129,7 +129,7 @@ async function acquireToken(refreshToken: string): Promise<any> {
 
 /**
  * 获取用户信息
- * 
+ *
  * @param refreshToken 用于刷新access_token的refresh_token
  */
 async function getUserInfo(accessToken: string, refreshToken: string) {
@@ -149,9 +149,9 @@ async function getUserInfo(accessToken: string, refreshToken: string) {
 
 /**
  * 创建会话
- * 
+ *
  * 创建临时的会话用于对话补全
- * 
+ *
  * @param refreshToken 用于刷新access_token的refresh_token
  */
 async function createConversation(model: string, name: string, refreshToken: string) {
@@ -183,9 +183,9 @@ async function createConversation(model: string, name: string, refreshToken: str
 
 /**
  * 移除会话
- * 
+ *
  * 在对话流传输完毕后移除会话，避免创建的会话出现在用户的对话列表中
- * 
+ *
  * @param refreshToken 用于刷新access_token的refresh_token
  */
 async function removeConversation(convId: string, refreshToken: string) {
@@ -209,7 +209,7 @@ async function removeConversation(convId: string, refreshToken: string) {
 
 /**
  * prompt片段提交
- * 
+ *
  * @param query prompt
  * @param refreshToken 用于刷新access_token的refresh_token
  */
@@ -238,7 +238,7 @@ async function promptSnippetSubmit(query: string, refreshToken: string) {
 
 /**
  * 同步对话补全
- * 
+ *
  * @param model 模型名称
  * @param messages 参考gpt系列消息格式，多轮对话请完整提供上下文
  * @param refreshToken 用于刷新access_token的refresh_token
@@ -317,7 +317,7 @@ async function createCompletion(model = MODEL_NAME, messages: any[], refreshToke
 
 /**
  * 流式对话补全
- * 
+ *
  * @param model 模型名称
  * @param messages 参考gpt系列消息格式，多轮对话请完整提供上下文
  * @param refreshToken 用于刷新access_token的refresh_token
@@ -392,9 +392,9 @@ async function createCompletionStream(model = MODEL_NAME, messages: any[], refre
 
 /**
  * 调用一些接口伪装访问
- * 
+ *
  * 随机挑一个
- * 
+ *
  * @param refreshToken 用于刷新access_token的refresh_token
  */
 async function fakeRequest(refreshToken: string) {
@@ -429,7 +429,7 @@ async function fakeRequest(refreshToken: string) {
 
 /**
  * 提取消息中引用的文件URL
- * 
+ *
  * @param messages 参考gpt系列消息格式，多轮对话请完整提供上下文
  */
 function extractRefFileUrls(messages: any[]) {
@@ -458,12 +458,12 @@ function extractRefFileUrls(messages: any[]) {
 
 /**
  * 消息预处理
- * 
+ *
  * 由于接口只取第一条消息，此处会将多条消息合并为一条，实现多轮对话效果
  * user:旧消息1
  * assistant:旧消息2
  * user:新消息
- * 
+ *
  * @param messages 参考gpt系列消息格式，多轮对话请完整提供上下文
  * @param isRefConv 是否为引用会话
  */
@@ -521,9 +521,9 @@ function messagesPrepare(messages: any[], isRefConv = false) {
 
 /**
  * 将消息中的URL包装为HTML标签
- * 
+ *
  * kimi网页版中会自动将url包装为url标签用于处理状态，此处也得模仿处理，否则无法成功解析
- * 
+ *
  * @param content 消息内容
  */
 function wrapUrlsToTags(content: string) {
@@ -532,7 +532,7 @@ function wrapUrlsToTags(content: string) {
 
 /**
  * 获取预签名的文件URL
- * 
+ *
  * @param filename 文件名称
  * @param refreshToken 用于刷新access_token的refresh_token
  */
@@ -560,7 +560,7 @@ async function preSignUrl(filename: string, refreshToken: string) {
 
 /**
  * 预检查文件URL有效性
- * 
+ *
  * @param fileUrl 文件URL
  */
 async function checkFileUrl(fileUrl: string) {
@@ -582,7 +582,7 @@ async function checkFileUrl(fileUrl: string) {
 
 /**
  * 上传文件
- * 
+ *
  * @param fileUrl 文件URL
  * @param refreshToken 用于刷新access_token的refresh_token
  */
@@ -694,7 +694,7 @@ async function uploadFile(fileUrl: string, refreshToken: string) {
 
 /**
  * 检查请求结果
- * 
+ *
  * @param result 结果
  * @param refreshToken 用于刷新access_token的refresh_token
  */
@@ -717,7 +717,7 @@ function checkResult(result: AxiosResponse, refreshToken: string) {
 
 /**
  * 从流接收完整的消息内容
- * 
+ *
  * @param model 模型名称
  * @param convId 会话ID
  * @param stream 消息流
@@ -778,9 +778,9 @@ async function receiveStream(model: string, convId: string, stream: any) {
 
 /**
  * 创建转换流
- * 
+ *
  * 将流格式转换为gpt兼容流格式
- * 
+ *
  * @param model 模型名称
  * @param convId 会话ID
  * @param stream 消息流
@@ -817,31 +817,33 @@ function createTransStream(model: string, convId: string, stream: any, endCallba
         const exceptCharIndex = result.text.indexOf("�");
         // 格式化流式文本消息text的值
         const chunk = result.text.substring(0, exceptCharIndex == -1 ? result.text.length : exceptCharIndex);
-        
+
         buffer += chunk;
 
-        // 检查是否形成完整的引用标记 [^数字^]
-        if (/\[\^\d+\^\]/.test(buffer)) {
-          // 清空缓冲区
-          buffer = '';
-          return;
-        }
-        
-        // 如果缓冲区中没有可疑的引用标记开始，则直接输出
-        if (!buffer.includes('[^')) {
+        // 当缓冲区长度达到6个字符时进行检查
+        if (buffer.length >= 6) {
+          // 检查前6个字符是否构成引用标记的开始部分 [^数^]
+          if (/^\[\^\d+\^\]/.test(buffer)) {
+            buffer = ''; // 如果是引用标记，清空缓冲区
+            return;
+          }
+
+          // 如果不是引用标记，输出第一个字符
+          const outputChar = buffer.charAt(0);
+          buffer = buffer.slice(1);
+
           const data = `data: ${JSON.stringify({
             id: convId,
             model,
             object: 'chat.completion.chunk',
             choices: [
-              { index: 0, delta: { content: (searchFlag ? '\n' : '') + buffer }, finish_reason: null }
+              { index: 0, delta: { content: (searchFlag ? '\n' : '') + outputChar }, finish_reason: null }
             ],
             created
           })}\n\n`;
-          
+
           if (searchFlag) searchFlag = false;
           !transStream.closed && transStream.write(data);
-          buffer = ''; // 输出后清空缓冲区
         }
       }
       // 处理结束或错误
@@ -859,7 +861,7 @@ function createTransStream(model: string, convId: string, stream: any, endCallba
               ],
               created
             })}\n\n`;
-            
+
             if (searchFlag) searchFlag = false;
             !transStream.closed && transStream.write(data);
           }
@@ -904,6 +906,23 @@ function createTransStream(model: string, convId: string, stream: any, endCallba
         })}\n\n`;
         !transStream.closed && transStream.write(data);
       }
+      else if (!silentSearch && result.event === 'ref_docs' && result.view === 'ref_cards') {
+        // 引用卡片 ”
+        if (result.ref_cards.length > 0) {
+
+          for (const card of result.ref_cards) {
+            !transStream.closed && transStream.write(`data: ${JSON.stringify({
+              id: convId,
+              model,
+              object: 'chat.completion.chunk',
+              choices: [
+                { index: 0, delta: { content: ` [”](${card.url}) ` }, finish_reason: null }
+              ],
+              created
+            })}\n\n`);
+          }
+        }
+      }
       // else
       //   logger.warn(result.event, result);
     }
@@ -921,7 +940,7 @@ function createTransStream(model: string, convId: string, stream: any, endCallba
 
 /**
  * Token切分
- * 
+ *
  * @param authorization 认证字符串
  */
 function tokenSplit(authorization: string) {
