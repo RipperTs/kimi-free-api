@@ -759,7 +759,7 @@ async function receiveStream(model: string, convId: string, stream: any) {
         // 处理联网搜索
         else if (!silentSearch && result.event == 'search_plus' && result.msg && result.msg.type == 'get_res'){
           webSearchCount += 1;
-          refContent += `![](${result.msg.icon}) [${result.msg.title}](${result.msg.url})\n\n`;
+          refContent += `【网页 ${webSearchCount} 】[${result.msg.title}](${result.msg.url})\n\n`;
         }
         // else
         //   logger.warn(result.event, result);
@@ -820,30 +820,28 @@ function createTransStream(model: string, convId: string, stream: any, endCallba
         
         buffer += chunk;
 
-        // 当缓冲区达到6个字符时进行检查
-        if (buffer.length >= 6) {
-          // 检查缓冲区中是否包含完整的引用标记 [^数^]
-          if (/\[\^\d+\^\]/.test(buffer)) {
-            // 清空缓冲区
-            buffer = '';
-            return;
-          }
-          // 如果不是引用标记，输出第一个字符并从缓冲区移除
-          const outputChar = buffer.charAt(0);
-          buffer = buffer.slice(1);
-          
+        // 检查是否形成完整的引用标记 [^数字^]
+        if (/\[\^\d+\^\]/.test(buffer)) {
+          // 清空缓冲区
+          buffer = '';
+          return;
+        }
+        
+        // 如果缓冲区中没有可疑的引用标记开始，则直接输出
+        if (!buffer.includes('[^')) {
           const data = `data: ${JSON.stringify({
             id: convId,
             model,
             object: 'chat.completion.chunk',
             choices: [
-              { index: 0, delta: { content: (searchFlag ? '\n' : '') + outputChar }, finish_reason: null }
+              { index: 0, delta: { content: (searchFlag ? '\n' : '') + buffer }, finish_reason: null }
             ],
             created
           })}\n\n`;
           
           if (searchFlag) searchFlag = false;
           !transStream.closed && transStream.write(data);
+          buffer = ''; // 输出后清空缓冲区
         }
       }
       // 处理结束或错误
@@ -898,7 +896,7 @@ function createTransStream(model: string, convId: string, stream: any, endCallba
           choices: [
             {
               index: 0, delta: {
-                content: `![](${result.msg.icon}) [${result.msg.title}](${result.msg.url})\n`
+                content: `【网页 ${webSearchCount} 】[${result.msg.title}](${result.msg.url})\n`
               }, finish_reason: null
             }
           ],
