@@ -11,27 +11,27 @@ export default {
                     {
                         "id": "moonshot-v1",
                         "object": "model",
-                        "owned_by": "kimi-free-api"
+                        "owned_by": "llm-search-api"
                     },
                     {
                         "id": "moonshot-v1-8k",
                         "object": "model",
-                        "owned_by": "kimi-free-api"
+                        "owned_by": "llm-search-api"
                     },
                     {
                         "id": "moonshot-v1-32k",
                         "object": "model",
-                        "owned_by": "kimi-free-api"
+                        "owned_by": "llm-search-api"
                     },
                     {
                         "id": "moonshot-v1-128k",
                         "object": "model",
-                        "owned_by": "kimi-free-api"
+                        "owned_by": "llm-search-api"
                     },
                     {
                         "id": "moonshot-v1-vision",
                         "object": "model",
-                        "owned_by": "kimi-free-api"
+                        "owned_by": "llm-search-api"
                     }
                 ]
             };
