@@ -759,7 +759,7 @@ async function receiveStream(model: string, convId: string, stream: any) {
         // 处理联网搜索
         else if (!silentSearch && result.event == 'search_plus' && result.msg && result.msg.type == 'get_res'){
           webSearchCount += 1;
-          refContent += `【检索 ${webSearchCount}】 [${result.msg.title}](${result.msg.url})\n\n`;
+          refContent += `![](${result.msg.icon}) [${result.msg.title}](${result.msg.url})\n\n`;
         }
         // else
         //   logger.warn(result.event, result);
@@ -793,6 +793,7 @@ function createTransStream(model: string, convId: string, stream: any, endCallba
   const transStream = new PassThrough();
   let webSearchCount = 0;
   let searchFlag = false;
+  let buffer = ''; // 定义缓冲区
   const silentSearch = model.indexOf('silent_search') != -1;
   !transStream.closed && transStream.write(`data: ${JSON.stringify({
     id: convId,
@@ -808,27 +809,65 @@ function createTransStream(model: string, convId: string, stream: any, endCallba
       if (event.type !== "event") return;
       // 解析JSON
       const result = _.attempt(() => JSON.parse(event.data));
+      logger.info(result);
       if (_.isError(result))
         throw new Error(`Stream response invalid: ${event.data}`);
       // 处理消息
       if (result.event == 'cmpl') {
         const exceptCharIndex = result.text.indexOf("�");
+        // 格式化流式文本消息text的值
         const chunk = result.text.substring(0, exceptCharIndex == -1 ? result.text.length : exceptCharIndex);
-        const data = `data: ${JSON.stringify({
-          id: convId,
-          model,
-          object: 'chat.completion.chunk',
-          choices: [
-            { index: 0, delta: { content: (searchFlag ? '\n' : '') + chunk }, finish_reason: null }
-          ],
-          created
-        })}\n\n`;
-        if (searchFlag)
-          searchFlag = false;
-        !transStream.closed && transStream.write(data);
+        
+        buffer += chunk;
+
+        // 当缓冲区达到6个字符时进行检查
+        if (buffer.length >= 6) {
+          // 检查缓冲区中是否包含完整的引用标记 [^数^]
+          if (/\[\^\d+\^\]/.test(buffer)) {
+            // 清空缓冲区
+            buffer = '';
+            return;
+          }
+          // 如果不是引用标记，输出第一个字符并从缓冲区移除
+          const outputChar = buffer.charAt(0);
+          buffer = buffer.slice(1);
+          
+          const data = `data: ${JSON.stringify({
+            id: convId,
+            model,
+            object: 'chat.completion.chunk',
+            choices: [
+              { index: 0, delta: { content: (searchFlag ? '\n' : '') + outputChar }, finish_reason: null }
+            ],
+            created
+          })}\n\n`;
+          
+          if (searchFlag) searchFlag = false;
+          !transStream.closed && transStream.write(data);
+        }
       }
       // 处理结束或错误
       else if (result.event == 'all_done' || result.event == 'error') {
+        // 先处理缓冲区中剩余的内容
+        if (buffer.length > 0) {
+          // 如果缓冲区中没有引用标记，输出所有剩余内容
+          if (!/\[\^\d+\^\]/.test(buffer)) {
+            const data = `data: ${JSON.stringify({
+              id: convId,
+              model,
+              object: 'chat.completion.chunk',
+              choices: [
+                { index: 0, delta: { content: (searchFlag ? '\n' : '') + buffer }, finish_reason: null }
+              ],
+              created
+            })}\n\n`;
+            
+            if (searchFlag) searchFlag = false;
+            !transStream.closed && transStream.write(data);
+          }
+          buffer = ''; // 清空缓冲区
+        }
+
         const data = `data: ${JSON.stringify({
           id: convId,
           model,
@@ -859,7 +898,7 @@ function createTransStream(model: string, convId: string, stream: any, endCallba
           choices: [
             {
               index: 0, delta: {
-                content: `【检索 ${webSearchCount}】 [${result.msg.title}](${result.msg.url})\n`
+                content: `![](${result.msg.icon}) [${result.msg.title}](${result.msg.url})\n`
               }, finish_reason: null
             }
           ],
