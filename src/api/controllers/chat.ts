@@ -748,7 +748,8 @@ async function receiveStream(model: string, convId: string, stream: any) {
         // 处理消息
         if (result.event == 'cmpl' && result.text) {
           const exceptCharIndex = result.text.indexOf("�");
-          data.choices[0].message.content += result.text.substring(0, exceptCharIndex == -1 ? result.text.length : exceptCharIndex);
+          const chunk = result.text.substring(0, exceptCharIndex == -1 ? result.text.length : exceptCharIndex);
+          data.choices[0].message.content += chunk.replace(/\[\^\d+\^\]/g, ''); // 检查并替换引用标记
         }
         // 处理结束或错误
         else if (result.event == 'all_done' || result.event == 'error') {
@@ -822,16 +823,13 @@ function createTransStream(model: string, convId: string, stream: any, endCallba
 
         // 当缓冲区长度达到6个字符时进行检查
         if (buffer.length >= 6) {
-          // 检查前6个字符是否构成引用标记的开始部分 [^数^]
-          if (/^\[\^\d+\^\]/.test(buffer)) {
-            buffer = ''; // 如果是引用标记，清空缓冲区
-            return;
-          }
-
-          // 如果不是引用标记，输出第一个字符
+          // 检查并替换引用标记
+          buffer = buffer.replace(/\[\^\d+\^\]/g, '');
+          
+          // 输出第一个字符
           const outputChar = buffer.charAt(0);
           buffer = buffer.slice(1);
-
+          
           const data = `data: ${JSON.stringify({
             id: convId,
             model,
@@ -841,7 +839,7 @@ function createTransStream(model: string, convId: string, stream: any, endCallba
             ],
             created
           })}\n\n`;
-
+          
           if (searchFlag) searchFlag = false;
           !transStream.closed && transStream.write(data);
         }
