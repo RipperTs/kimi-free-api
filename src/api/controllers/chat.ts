@@ -918,7 +918,7 @@ function createTransStream(model: string, convId: string, stream: any, endCallba
               model,
               object: 'chat.completion.chunk',
               choices: [
-                { index: 0, delta: { content: ` [^${card.source_label}^](${card.url}) ` }, finish_reason: null }
+                { index: 0, delta: { content: ` [^${source_label}^](${card.url}) ` }, finish_reason: null }
               ],
               created
             })}\n\n`);
