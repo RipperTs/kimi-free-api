@@ -909,6 +909,10 @@ function createTransStream(model: string, convId: string, stream: any, endCallba
         if (result.ref_cards.length > 0) {
 
           for (const card of result.ref_cards) {
+            let source_label = card.source_label;
+            if (source_label.trim() === ''){
+              source_label = '来源';
+            }
             !transStream.closed && transStream.write(`data: ${JSON.stringify({
               id: convId,
               model,
