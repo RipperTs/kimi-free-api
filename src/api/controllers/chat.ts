@@ -825,11 +825,11 @@ function createTransStream(model: string, convId: string, stream: any, endCallba
         if (buffer.length >= 6) {
           // 检查并替换引用标记
           buffer = buffer.replace(/\[\^\d+\^\]/g, '');
-          
+
           // 输出第一个字符
           const outputChar = buffer.charAt(0);
           buffer = buffer.slice(1);
-          
+
           const data = `data: ${JSON.stringify({
             id: convId,
             model,
@@ -839,7 +839,7 @@ function createTransStream(model: string, convId: string, stream: any, endCallba
             ],
             created
           })}\n\n`;
-          
+
           if (searchFlag) searchFlag = false;
           !transStream.closed && transStream.write(data);
         }
@@ -914,7 +914,7 @@ function createTransStream(model: string, convId: string, stream: any, endCallba
               model,
               object: 'chat.completion.chunk',
               choices: [
-                { index: 0, delta: { content: ` [^](${card.url}) ` }, finish_reason: null }
+                { index: 0, delta: { content: ` [^${card.source_label}^](${card.url}) ` }, finish_reason: null }
               ],
               created
             })}\n\n`);
