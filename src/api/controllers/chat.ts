@@ -904,14 +904,14 @@ function createTransStream(model: string, convId: string, stream: any, endCallba
         })}\n\n`;
         !transStream.closed && transStream.write(data);
       }
-      else if (!silentSearch && result.event === 'ref_docs' && result.view === 'ref_cards') {
+      else if (result.event === 'ref_docs' && result.view === 'ref_cards') {
         // 引用卡片 ”
         if (result.ref_cards.length > 0) {
 
           for (const card of result.ref_cards) {
             let source_label = card.source_label;
             if (source_label.trim() === ''){
-              source_label = '来源';
+              source_label = 'None';
             }
             !transStream.closed && transStream.write(`data: ${JSON.stringify({
               id: convId,
