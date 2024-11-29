@@ -911,7 +911,7 @@ function createTransStream(model: string, convId: string, stream: any, endCallba
           for (const card of result.ref_cards) {
             let source_label = card.source_label;
             if (source_label.trim() === ''){
-              source_label = 'None';
+              source_label = 'none';
             }
             !transStream.closed && transStream.write(`data: ${JSON.stringify({
               id: convId,
