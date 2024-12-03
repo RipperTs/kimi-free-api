@@ -1,4 +1,4 @@
-FROM node:lts AS BUILD_IMAGE
+FROM registry.cn-hangzhou.aliyuncs.com/ripper/node:lts AS BUILD_IMAGE
 
 WORKDIR /app
 
@@ -6,7 +6,7 @@ COPY . /app
 
 RUN yarn install --registry https://registry.npmmirror.com/ && yarn run build
 
-FROM node:lts-alpine
+FROM registry.cn-hangzhou.aliyuncs.com/ripper/node:lts-alpine
 
 COPY --from=BUILD_IMAGE /app/public /app/public
 COPY --from=BUILD_IMAGE /app/configs /app/configs
