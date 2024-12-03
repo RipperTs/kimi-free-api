@@ -904,7 +904,7 @@ function createTransStream(model: string, convId: string, stream: any, endCallba
         })}\n\n`;
         !transStream.closed && transStream.write(data);
       }
-      else if (result.event === 'ref_docs' && result.view === 'ref_cards') {
+      else if (!silentSearch && result.event === 'ref_docs' && result.view === 'ref_cards') {
         // 引用卡片 ”
         if (result.ref_cards.length > 0) {
 
